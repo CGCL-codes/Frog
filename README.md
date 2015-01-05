@@ -1,7 +1,7 @@
 Frog
 =======
 
-Optimization of Asynchronous Graph Processing on GPU with Hybrid Coloring Model
+Asynchronous Graph Processing on GPU with Hybrid Coloring Model
 
 Modern GPUs have been widely used to accelerate the graph pro-
 cessing for complicated computational problems regarding graph
@@ -20,7 +20,7 @@ a large number of colors generally required for processing a large-
 size (a.k.a., large-scale) graph with billions of vertices.
 
 We propose a light-weight asynchronous processing framework
-called Feynman with a hybrid coloring model. The fundamental
+called Frog with a hybrid coloring model. The fundamental
 idea is based on Pareto principle (or 80-20 rule) about coloring
 algorithms as we observed through masses of real graph coloring
 cases. We find that majority of vertices (about 80%) are colored
@@ -34,4 +34,6 @@ and (2) how to reduce the overhead of data transfers on PCI-e
 while processing each partition. Experiments based on real-world
 data show that our asynchronous GPU graph processing engine
 outperforms other state-of-the-art approaches by the speedup over
-4.3X-26.2X.
+4.2X-29.7X.
+
+Project details can be found at http://grid.hust.edu.cn/xhshi/projects/frog.html .

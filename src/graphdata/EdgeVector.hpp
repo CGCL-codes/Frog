@@ -80,10 +80,17 @@ public:
 		tmp.src = _src;
 		tmp.dst = _dst;
 		//tmp.val = _val;
+		tmp.weight = 2;
 		ev.push_back(tmp);
 		edge_num++;
+/*
+		if(edge_num < 100)
+		{
+			std::cout << "edges weight " << tmp.src << " ," << tmp.dst << " ," << tmp.weight << std::endl;
+		}
 		if(edge_num % (10000000) == 0)
 			std::cout << "add edge number is already " << edge_num << std::endl;
+*/
 	}
 /*
 	float get_edge_value(unsigned int _src, unsigned int _dst)

@@ -14,7 +14,7 @@ using namespace std;
 #define PG_D 0.5
 #define PG_D_STOP 0.01
 #define BFS_CHUNK 4 
-#define W_SE 1
+#define W_SE 4
 #define CO_CHUNK (10-1)
 
 
@@ -78,6 +78,22 @@ __global__ void BFS_E(unsigned int *values, struct EdgeData *edges, unsigned int
 
 }
 
+__global__ void BFS_E_W(unsigned int *values, struct EdgeData *edges, unsigned int e_size, int step, int *stop)
+{
+    int idx = threadIdx.x + blockIdx.x * blockDim.x, index = idx % e_size;
+    unsigned int indexSrc = edges[index].src, indexDst = edges[index].dst;
+
+    if(values[indexSrc] == step)
+    {
+        if(values[indexDst] == INIT_VAL)
+        {
+            values[indexDst] = step + 1;
+            stop[0] = 1;
+        }
+    }
+
+}
+
 __global__ void PageRank_V_D(float *values, struct VertexData *vertex, struct EdgeData *edges, unsigned int *degrees, unsigned int v_size, unsigned int *stop, int step, int *iter)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x, index = idx % v_size;
@@ -103,24 +119,26 @@ __global__ void PageRank_V_D(float *values, struct VertexData *vertex, struct Ed
 		atomicExch(&values[v_id], tmp);
 
 		if(fabsf(old - values[v_id]) > PG_D_STOP)
-        {
-            stop[0] = 1;
+        	{
+            		stop[0] = 1;
 		}
 		return;
 	}
 
-        for(unsigned int i = v_b; i < v_e; i++)
-        {
-		indexSrc = edges[i].src;
-		sum = sum + values[indexSrc] / ( degrees[indexSrc] * 1.0);
-        }
-
-	values[v_id] = PG_D * sum + 1 - PG_D;
-
-	if(fabsf(old - values[v_id]) > PG_D_STOP)
 	{
-		//atomicSub(stop, 1);
-		stop[0] = 1;
+        	for(unsigned int i = v_b; i < v_e; i++)
+        	{
+			indexSrc = edges[i].src;
+			sum = sum + values[indexSrc] / ( degrees[indexSrc] * 1.0);
+        	}
+
+		values[v_id] = PG_D * sum + 1 - PG_D;
+
+		if(fabsf(old - values[v_id]) > PG_D_STOP)
+		{
+			//atomicSub(stop, 1);
+			stop[0] = 1;
+		}
 	}
 }
 
@@ -149,16 +167,16 @@ __global__ void Component_V_D(unsigned int *values, struct VertexData *vertex, s
 	}
 }
 
-__global__ void Component_V(float *values, struct VertexData *vertex, struct EdgeData *edges, unsigned int v_size, unsigned int *stop, int step, int *iter)
+__global__ void Component_V(unsigned int *values, struct VertexData *vertex, struct EdgeData *edges, unsigned int v_size, int *stop)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x, index = idx % v_size;
         unsigned int v_id = vertex[index].id, v_b = vertex[index].begin, v_e = vertex[index].end, indexSrc, level = values[v_id];
 
 	for(unsigned int i = v_b; i < v_e; i++)
 	{
-		if(values[edges[i].src] < level)
+		if(values[edges[i].dst] < level)
 		{
-			level = values[edges[i].src];
+			level = values[edges[i].dst];
 		}
 	}
 
@@ -166,7 +184,7 @@ __global__ void Component_V(float *values, struct VertexData *vertex, struct Edg
         {
                 for(unsigned int i = v_b; i < v_e; i++)
                 {
-                        values[edges[i].src] = level;
+                        values[edges[i].dst] = level;
                 }
                 values[v_id] = level;
                 stop[0] = 1;
@@ -175,7 +193,7 @@ __global__ void Component_V(float *values, struct VertexData *vertex, struct Edg
 }
 
 
-__global__ void Component_E(unsigned int *values, struct VertexData *vertex, struct EdgeData *edges, unsigned int e_size, int step, int *stop)
+__global__ void Component_E(unsigned int *values, struct EdgeData *edges, unsigned int e_size, int step, int *stop)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x, index = idx % e_size;
         unsigned int indexSrc = edges[index].src, indexDst = edges[index].dst;
@@ -187,11 +205,76 @@ __global__ void Component_E(unsigned int *values, struct VertexData *vertex, str
 		stop[0] = 1;
 		return ;
 	}
+/*    
 	if(valDst > valSrc)
 	{
 		values[indexDst] = valSrc;
 		stop[0] = 1;
 		return ;
 	}
+*/
 }
 
+__global__ void dijkstra_first_phase_e(unsigned int *value, unsigned int *new_value, struct EdgeData *edges, unsigned int e_size, bool *to_update)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x, index = idx % e_size;
+        unsigned int indexSrc = edges[index].src, indexDst = edges[index].dst;
+	
+        if(to_update[indexSrc])
+        {
+		unsigned int new_weight = value[indexSrc] + edges[index].weight;
+		if(new_weight < new_value[indexDst])
+		{
+			new_value[indexDst] = new_weight;
+		}
+        }
+
+	return ;
+}
+
+__global__ void dijkstra_first_phase_v(unsigned int *value, unsigned int *new_value, struct VertexData *vertex, struct EdgeData *edges, unsigned int v_size, bool *to_update)
+{
+        int index = threadIdx.x + blockIdx.x * blockDim.x;
+	if(index > v_size)
+	{
+		return ;
+	}
+
+        unsigned int vertex_id = vertex[index].id, e_begin = vertex[index].begin, e_end = vertex[index].end;
+
+        if(to_update[vertex_id])
+        {
+		for(unsigned int i = e_begin; i < e_end; i++)
+		{
+                	unsigned int new_weight = value[vertex_id] + edges[i].weight;
+			//tests only, worng value
+			new_weight = value[vertex_id] + 2;
+                	if(new_weight < new_value[edges[i].dst])
+                	{
+                        	new_value[edges[i].dst] = new_weight;
+                	}
+		}
+        }
+
+        return ;
+}
+
+
+__global__ void dijkstra_second_phase(unsigned int *value, unsigned int *new_value, unsigned int v_size, bool *to_update, int *stop)
+{
+	int index = threadIdx.x + blockIdx.x * blockDim.x;
+
+	if(index > v_size)
+	{
+		return ;
+	}
+
+	unsigned int vertex_id = index;
+
+	if (new_value[vertex_id] < value[vertex_id]) {
+    		value[vertex_id] = new_value[vertex_id];
+    		to_update[vertex_id] = true;
+    		stop[0] = 1;
+  	}
+  	new_value[vertex_id] = value[vertex_id];
+}

@@ -830,7 +830,7 @@ public:
                         unsigned int index = c_size[j]++;
                         m_all_edge[j][index].src = ev.ev[n].src;
                         m_all_edge[j][index].dst = ev.ev[n].dst;
-                        //m_all_edge[j][index].val = 0.0;
+                        m_all_edge[j][index].weight = ev.ev[n].weight;
                 }
                 free(c_size);
 

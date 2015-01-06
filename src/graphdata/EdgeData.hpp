@@ -6,7 +6,7 @@
 struct EdgeData{
 	unsigned int src;
 	unsigned int dst;
-//	float val;
+	unsigned int weight;
 	bool operator < (struct EdgeData &p);
 };
 

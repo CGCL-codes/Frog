@@ -11,6 +11,8 @@
  *lock mem for the last partition #6
  *lock count for the last partition #7
  *lock bool, to make sure start from any index #8
+ *dijkstra used another value of vertices #9
+ *dijkstra used device memory of updating vertices #10
  *
  */
 
@@ -33,6 +35,21 @@ typedef float* V_P_TYPE;
 #ifdef BFS_VAL_TYPE
 typedef unsigned int V_TYPE;
 typedef unsigned int* V_P_TYPE;
+#endif
+
+#ifdef SSSP_VAL_TYPE
+typedef unsigned int V_TYPE;
+typedef unsigned int* V_P_TYPE;
+#endif
+
+#ifdef CC_VAL_TYPE
+typedef unsigned int V_TYPE;
+typedef unsigned int* V_P_TYPE;
+#endif
+
+#ifdef PG_S_VAL_TYPE
+typedef float V_TYPE;
+typedef float* V_P_TYPE;
 #endif
 
 V_P_TYPE m_value;
@@ -495,4 +512,83 @@ int memcpy_bool_lock_m2d(unsigned int size)
 {
         cudaMemcpy(d_bool_lock, bool_lock, sizeof(unsigned int) * size, cudaMemcpyHostToDevice);
         return size;
+}
+
+//dijkstra used another value of vertices #9
+V_P_TYPE new_dijk_value;
+V_P_TYPE new_d_dijk_value;
+
+int mem_dijkstra_values()
+{
+        cudaMallocHost(&new_dijk_value, sizeof(V_TYPE) * m_size);
+        memset(new_dijk_value, 0, sizeof(V_TYPE) / sizeof(V_TYPE) * m_size);
+        std::cout << "Dijkstra used second memory size is " << (m_size * sizeof(V_TYPE)) / (1024 * 1024) << " MB."<<std::endl;
+        return m_size;
+}
+
+int release_dijkstra_values()
+{
+        cudaFreeHost(new_dijk_value);
+        return m_size;
+}
+
+int d_mem_dijkstra_values(unsigned int d_size)
+{
+        cudaMalloc((void **)&new_d_dijk_value, sizeof(V_TYPE) * (d_size + 1));
+        return d_size;
+}
+
+int d_release_dijkstra_values()
+{
+        cudaFree(new_d_dijk_value);
+        return 0;
+}
+
+int memcpy_dijkstra_value_m2d(int s)
+{
+        cudaMemcpyAsync(new_d_dijk_value, new_dijk_value, sizeof(V_TYPE) * m_size, cudaMemcpyHostToDevice, stream[s]);
+        return m_size;
+}
+
+int memcpy_dijkstra_value_d2m(int s)
+{
+        cudaMemcpyAsync(new_dijk_value, new_d_dijk_value, sizeof(V_TYPE) * m_size, cudaMemcpyDeviceToHost, stream[s]);
+        return m_size;
+}
+
+
+//dijkstra used device memory of updating vertices #10
+bool *d_to_update;
+bool *m_to_update;
+
+void mem_dijkstra_to_update()
+{
+	cudaMalloc((void **)&d_to_update, sizeof(bool) * m_size);
+}
+
+void release_dijkstra_to_update()
+{
+	cudaFree(d_to_update);
+}
+
+void mem_dijkstra_to_update_host(unsigned int _init_index, bool _init_val)
+{
+	m_to_update = (bool *)malloc(sizeof(bool) * m_size);
+        memset(m_to_update, false, sizeof(bool) * m_size);
+	m_to_update[_init_index] = _init_val;
+}
+
+void release_dijkstra_to_update_host()
+{
+        free(m_to_update);
+}
+
+void memcpy_to_update_m2d()
+{
+	cudaMemcpy(d_to_update, m_to_update, sizeof(bool) * m_size, cudaMemcpyHostToDevice);
+}
+
+void memcpy_to_update_d2m()
+{
+	cudaMemcpy(m_to_update, d_to_update, sizeof(bool) * m_size, cudaMemcpyDeviceToHost);
 }

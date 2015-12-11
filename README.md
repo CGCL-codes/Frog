@@ -3,37 +3,7 @@ Frog
 
 Asynchronous Graph Processing on GPU with Hybrid Coloring Model
 
-Modern GPUs have been widely used to accelerate the graph pro-
-cessing for complicated computational problems regarding graph
-theory. Several newly proposed graph computing frameworks for
-clusters and multi-core servers adopt the asynchronous comput-
-ing model to accelerate the convergence of many iterative graph
-algorithms. Unfortunately, the consistent asynchronous computing
-requires locking or the atomic operation, which will result in sig-
-nificant penalties when implemented on GPUs. In order to avoid
-the significant runtime overhead of locking operation on GPU and
-guarantee the correctness/consistency of the parallel processing,
-many solutions adopt coloring algorithms that can separate the
-vertices with potential updating conflicts. Common coloring algo-
-rithms, however, may suffer from low parallel degrees because of
-a large number of colors generally required for processing a large-
-size (a.k.a., large-scale) graph with billions of vertices.
-
-We propose a light-weight asynchronous processing framework
-called Frog with a hybrid coloring model. The fundamental
-idea is based on Pareto principle (or 80-20 rule) about coloring
-algorithms as we observed through masses of real graph coloring
-cases. We find that majority of vertices (about 80%) are colored
-with only a few colors, such that they can be read and updated
-in a very high parallel degree without violating the sequential
-consistency. Accordingly, our solution will separate the processing
-of the vertices based on the distribution of colors. In this work, we
-mainly answer the two questions: (1) how to partition the vertices
-in a super-large graph with maximized parallel processing degree,
-and (2) how to reduce the overhead of data transfers on PCI-e
-while processing each partition. Experiments based on real-world
-data show that our asynchronous GPU graph processing engine
-outperforms other state-of-the-art approaches by the speedup over
-4.2X-29.7X.
+GPUs have been increasingly used to accelerate graph processing for complicated computational problems regarding graph theory. Many parallel graph algorithms adopt the asynchronous computing model to accelerate the iterative convergence. Unfortunately, the consistent asynchronous computing requires locking or atomic operations, leading to signiﬁcant penalties/overheads when implemented on GPUs. To this end, coloring algorithm is adopted to separate the vertices with potential updating conﬂicts, guaranteeing the consistency/correctness of the parallel processing. Common coloring algorithms, however, may suffer from low parallelism because of a large number of colors generally required for processing a large-scale graph with billions of vertices.
+We propose a light-weight asynchronous processing framework called Frog with a hybrid coloring model. The fundamental idea is based on Pareto principle (or 80-20 rule) about coloring algorithms as we observed through masses of real graph coloring cases. We ﬁnd that majority of vertices (about 80%) are colored with only a few colors, such that they can be read and updated in a very high degree of parallelism without violating the sequential consistency. Accordingly, our solution will separate the processing of the vertices based on the distribution of colors. In this work, we mainly answer the four questions: (1) how to partition the vertices in a sparse graph with maximized parallelism, (2) how to process large-scale graphs which are out of GPU memory, (3) how to reduce the overhead of data transfers on PCIe while processing each partition, and (4) how to customize the data structure that is particularly suitable for GPU-based graph processing. Experiments based on real-world data show that our asynchronous GPU graph processing engine outperforms other state-of-the-art approaches by 2.23X–55.15X.
 
 Project details can be found at http://grid.hust.edu.cn/xhshi/projects/frog.html .

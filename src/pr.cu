@@ -119,6 +119,7 @@ __global__ static void kernel_vertex_pr (
 		float * const values,
 		float * const add_values,
 		int * const tem_values,
+		int * const out_degree,
 		int * const continue_flag
 		) 
 {
@@ -133,7 +134,7 @@ __global__ static void kernel_vertex_pr (
 		if(tem_values[id]==1)
 			continue;
 		float new_value = 0.0f;
-		int nbrs_num=vertex_begin[i+1]-vertex_begin[i];
+		int nbrs_num=out_degree[id];
 		for (int e = vertex_begin[i]; e < vertex_begin[i + 1]; e++)
 			new_value += add_values[edge_src[e]];
 		new_value = PAGERANK_COEFFICIENT * new_value + 1.0f - PAGERANK_COEFFICIENT;
@@ -313,6 +314,7 @@ static void gpu_pr_navie(
 					dev_value,
 					dev_add_value,
 					dev_tem_value,
+					dev_vertex_degree,
 					dev_continue_flag
 					);
 			tm=CudaTimerEnd();

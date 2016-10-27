@@ -37,7 +37,7 @@ int main(int argc, char ** argv) {
 			printf("%.2f ms \n", timer_stop());
 			printf("Begin Experiments on Graph (V=%d E=%d File='%s')\n",
 					g->vertex_num, g->edge_num, argv[i]);
-
+           
 			Experiments(g);
 
 			printf("-------------------------------------------------------------------\n");

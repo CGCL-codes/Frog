@@ -270,7 +270,7 @@ static void gpu_pr_atomic(
 	CudaMemcpyD2H(values, dev_value, vertex_num * sizeof(float));
 //	printf("prTime = %.2f ms....., transTime = %.2fms\n", prTime, transTime);
 	printf("\t%.2f\t%.2f\tpagerank_edge_loop\tstep=%d\t\n",
-			timer_stop(), prTime, step);
+			prTime,timer_stop(),  step);
 	/*
 	   printf("\tvalues:");
 	   for (int i = 0; i < 15; i++) printf(" %.6f", values[i]);
@@ -353,7 +353,7 @@ static void gpu_pr_navie(
 	// Copy Back Values
 	CudaMemcpyD2H(values, dev_value, vertex_num * sizeof(float));
 	printf("\t%.2f\t%.2f\tpagerank_vertex_loop\tstep=%d\t\n",
-			timer_stop(), totalTime, step);
+			totalTime,timer_stop(),  step);
 	/*
 	   printf("\tvalues:");
 	   for (int i = 0; i < 15; i++) printf(" %.6f", values[i]);

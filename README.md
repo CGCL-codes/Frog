@@ -9,4 +9,7 @@ We propose a light-weight asynchronous processing framework called Frog with a h
 
 Project details can be found at http://grid.hust.edu.cn/xhshi/projects/frog.html .
 Publications about Frog:
+
 [1] Xuanhua Shi, Junling Liang, Sheng Di, Bingsheng He, Hai Jin, Lu Lu, Zhixiang Wang, Xuan Luo, Jianlong Zhong, "Optimization of Asynchronous Graph Processing on GPU with Hybrid Coloring Model". in Proceedings of the ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming (PPoPP '15), poster, San Francisco, USA, 2015.
+
+[2] Xuanhua Shi, Xuan Luo, Junling Liang, Peng Zhao, Sheng Di, Bingsheng He, Hai Jin, "Frog: Asynchronous Graph Processing on GPU with Hybrid Coloring Model", IEEE Transactions on Knowledge and Data Engineering, 2017.

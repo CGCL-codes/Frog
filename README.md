@@ -12,6 +12,6 @@ Publications about Frog:
 
 [1] Xuanhua Shi, Junling Liang, Sheng Di, Bingsheng He, Hai Jin, Lu Lu, Zhixiang Wang, Xuan Luo, Jianlong Zhong, "Optimization of Asynchronous Graph Processing on GPU with Hybrid Coloring Model". in Proceedings of the ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming (PPoPP '15), poster, San Francisco, USA, 2015.
 
-[2] Xuanhua Shi, Xuan Luo, Junling Liang, Peng Zhao, Sheng Di, Bingsheng He, Hai Jin, "Frog: Asynchronous Graph Processing on GPU with Hybrid Coloring Model", IEEE Transactions on Knowledge and Data Engineering, 2017.
+[2] Xuanhua Shi, Xuan Luo, Junling Liang, Peng Zhao, Sheng Di, Bingsheng He, Hai Jin, "Frog: Asynchronous Graph Processing on GPU with Hybrid Coloring Model", IEEE Transactions on Knowledge and Data Engineering, 30 (1): 29-42, 2018.
 
 [3] Xuanhua Shi, Zhigao Zheng, Yongluan Zhou, Hai Jin, Ligang He, Bo Liu, Qiang-Sheng Hua, "Graph Processing on GPUs: A Survey", ACM Computing Surveys, 50, 6, Article 81, January 2018, 35 pages.
